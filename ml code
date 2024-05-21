@@ -1,0 +1,115 @@
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.set(style="white", color_codes=True)
+import warnings
+warnings.filterwarnings("ignore")
+import os
+
+# DATA PREPROCESSING
+# import dataset
+liver = pd.read_csv("C:\sai\indian_liver_patient.csv")
+liver.columns
+
+liver.head()
+
+liver.describe()
+
+liver.shape
+# EXPLORATORY DATA ANALYSIS
+liver.dtypes [liver.dtypes=='object']
+# DATA CLEANING
+liver.duplicated()
+
+liver=liver.drop_duplicates()
+print(liver.shape)
+# checking missing values
+#Count Not a Number Values in Pandas DataFrame
+liver.isna().sum()
+sns.boxplot(data=liver,x='Albumin_and_Globulin_Ratio')
+liver['Albumin_and_Globulin_Ratio'].mode()
+liver['Albumin_and_Globulin_Ratio'].median()
+liver['Albumin_and_Globulin_Ratio'].mean()
+liver['Albumin_and_Globulin_Ratio']=liver['Albumin_and_Globulin_Ratio'].fillna(liver['Albumin_and_Globulin_Ratio'].median())
+liver.isna().sum()
+liver
+liver['Dataset']
+
+# DISTRIBUTION OF NUMERICAL FEATURES
+# Plot histogram grid
+liver.hist(figsize=(15,15), xrot=-45, bins=10) ## Display the labels rotated by 45 degress
+# Clear the text "residue"
+plt.show()
+# BAR PLOTS FOR CATEGORICAL FEATURES
+liver.plot(kind="scatter", x="Total_Bilirubin", y="Direct_Bilirubin")
+import seaborn as sns
+sns.countplot(data = liver,x='Gender',label='count') #counts of observations in each categorical bin using bars
+Male,Female=liver['Gender'].value_counts()
+print('Number of patients that are male:',Male)
+print('Number of patients that are female:',Female)
+sns.jointplot(x="Age", y="Total_Protiens", data=liver, size=5)
+sns.FacetGrid(liver, hue="Total_Protiens")\.map(plt.scatter, "Total_Bilirubin", "Direct_Bilirubin")\.add_legend()
+sns.pairplot(liver.drop("Age", axis=1), hue="Total_Protiens", size=3)
+
+from sklearn.preprocessing import LabelEncoder
+le =  LabelEncoder()
+liver.head()
+liver['Gender'].replace(to_replace=['Male','Female'], value=[0,1],inplace=True)
+liver
+liver.isna().sum()
+
+Feature = liver[['Age','Gender','Total_Bilirubin','Direct_Bilirubin','Alkaline_Phosphotase','Alamine_Aminotransferase','Aspartate_Aminotransferase','Total_Protiens','Albumin','Albumin_and_Globulin_Ratio']]
+
+# MACHINE LEARNING MODELS
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+X = liver.iloc[:, :-1].values
+Y = liver.iloc[:, -1].values
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+print(X.shape, Y.shape, X_train.shape, X_test.shape, Y_train.shape, Y_test.shape)
+
+
+# LogisticRegression
+from sklearn.linear_model import LogisticRegression
+classifier = LogisticRegression()
+classifier.fit(X_train, Y_train)
+Y_pred = classifier.predict(X_test)
+print(classification_report(Y_test, Y_pred))
+print(confusion_matrix(Y_test, Y_pred))
+from sklearn.metrics import accuracy_score
+print('accuracy is',accuracy_score(Y_pred,Y_test))
+
+# K Nearest Neighbour
+from sklearn.neighbors import KNeighborsClassifier
+classifier = KNeighborsClassifier(n_neighbors=8)
+classifier.fit(X_train, Y_train)
+Y_pred = classifier.predict(X_test)
+print(classification_report(Y_test, Y_pred))
+print(confusion_matrix(Y_test, Y_pred))
+from sklearn.metrics import accuracy_score
+print('accuracy is',accuracy_score(Y_pred,Y_test))
+
+# Support Vector Machine
+from sklearn.svm import SVC
+classifier = SVC()
+classifier.fit(X_train, Y_train)
+Y_pred = classifier.predict(X_test)
+print(classification_report(Y_test, Y_pred))
+print(confusion_matrix(Y_test, Y_pred))
+from sklearn.metrics import accuracy_score
+print('accuracy is',accuracy_score(Y_pred,Y_test))
+
+# RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
+classifier = RandomForestClassifier(max_depth=2, random_state=0)
+classifier.fit(X_train, Y_train)
+Y_pred = classifier.predict(X_test)
+print(classification_report(Y_test, Y_pred))
+print(confusion_matrix(Y_test, Y_pred))
+from sklearn.metrics import accuracy_score
+print('accuracy is',accuracy_score(Y_pred,Y_test))
+
+        
